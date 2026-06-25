@@ -1,4 +1,4 @@
-# Swift Development in Apple Container Machine (Ubuntu + Swift 6)
+# Swift Development in Apple Container Machine
 
 ## Overview
 
