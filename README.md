@@ -51,15 +51,15 @@ container machine create \
 ```Shell
 cat >> ~/.ssh/config <<EOT
 
-Host swift-dev.machine
-   HostName swift-dev.machine
+Host swift-dev-machine
+   HostName swift-dev-machine
    ForwardAgent yes
    UserKnownHostsFile /dev/null
 EOT
 ```
 
 ```Shell
-sudo container system dns create machine
+sudo container system dns create dns-machine
 ```
 
 ---
@@ -76,7 +76,7 @@ container machine run -it sudo passwd $(whoami)
 
 ```Shell
 container machine ls
-ping -c 1 swift-dev.machine
+ping -c 1 swift-dev-machine
 ```
 
 ---
@@ -84,19 +84,22 @@ ping -c 1 swift-dev.machine
 ## 6. VS Code
 
 ```Shell
-Remote-SSH → swift-dev.machine
+Remote-SSH → swift-dev-machine
 ```
 
 ---
 
-## 7. Open project
+## 7. Clone project
+On your Mac host machine, clone this repo into any folder of your choice.
+
 ```Shell
 git clone https://github.com/swiftlang/swift-server-todos-tutorial.git
 ```
 
 ---
 
-## 8. Build
+## 8. Build (in swift-dev-machine)
+In VS Code inside the swift-dev-machine, make sure that the Swift extension is installed.
 
 ```Shell
 swift build
@@ -104,9 +107,27 @@ swift build
 
 ---
 
-## 9. Run
+## 9. Run (in swift-dev-machine)
+Add this to `.vscode/launch.json`:
+
+```JSON
+{
+  "type": "swift",
+  "request": "launch",
+  "name": "Launch Swift Executable",
+  "program": "${workspaceRoot}/.build/debug/SwiftServerTodos",
+  "args": [],
+  "env": {},
+  "cwd": "${workspaceRoot}"
+},
+```
+
+Then run the app by clicking the play button in the Run and Debug section of VS Code.
+
+## 10. Check (in Mac host machine)
+
 ```Shell
-curl http://swift-dev.machine:8080/todos
+curl http://swift-dev-machine:8080/todos
 ```
 
 You can optionally set a breakpoint in the `Telemetry.swift` file and set a breakpoint on the innermost statement of the `RequestLoggerInjectionMiddleware.respond()` function.
@@ -118,4 +139,7 @@ You can optionally set a breakpoint in the `Telemetry.swift` file and set a brea
 container machine stop swift-dev-machine
 container machine rm swift-dev-machine
 container image rm swift-dev-image:latest
+sudo container system dns rm dns-machine
 ```
+
+A Swift image should also have been created. If you don't plan to re-use it, you can also check its name with `container image ls` and remove it with `container image rm [name:tag]`, for instance: `container image rm swift:6.3.2-noble`.
