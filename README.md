@@ -23,6 +23,57 @@ Flow:
 
 Dockerfile → container image → container machine → SSH + VS Code remote dev
 
+## Diagram
+
+```Mermaid
+flowchart LR
+
+%% =========================
+%% LAYERS
+%% =========================
+
+subgraph L0["macOS Host Layer"]
+    A["host-mac<br/>Your Mac"]
+end
+
+subgraph L1["Build Layer"]
+    B["Dockerfile"]
+    C["swift-dev-image<br/>(container image)"]
+end
+
+subgraph L2["Container Machine Layer"]
+    D["swift-dev-machine<br/>(persistent Linux environment)"]
+end
+
+subgraph L3["Runtime Layer"]
+    E["Ubuntu 24.04 (Noble)<br/>Linux userland"]
+end
+
+subgraph L4["Development Tools"]
+    F["SSH access"]
+    G["VS Code Remote-SSH"]
+    H["Swift build & run"]
+end
+
+%% =========================
+%% FLOW
+%% =========================
+
+A -->|container build| B
+B -->|build image| C
+C -->|container machine create| D
+D --> E
+
+D --> F --> G --> H
+
+%% =========================
+%% OPTIONAL HOST INTERACTION
+%% =========================
+
+A -->|git clone project| H
+A -->|curl http://swift-dev-machine:8080| D
+```
+
 ---
 
 ## 1. Build container image
