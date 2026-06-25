@@ -26,52 +26,62 @@ Dockerfile → container image → container machine → SSH + VS Code remote de
 ## Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
 
 %% =========================
-%% LAYERS
+%% LAYER 0 - MAC HOST
 %% =========================
+A["macOS Host<br/>host-mac"]
 
-subgraph L0["macOS Host Layer"]
-    A["host-mac<br/>Your Mac"]
-end
-
+%% =========================
+%% LAYER 1 - BUILD
+%% =========================
 subgraph L1["Build Layer"]
     B["Dockerfile"]
     C["swift-dev-image<br/>(container image)"]
 end
 
+%% =========================
+%% LAYER 2 - MACHINE
+%% =========================
 subgraph L2["Container Machine Layer"]
     D["swift-dev-machine<br/>(persistent Linux environment)"]
 end
 
+%% =========================
+%% LAYER 3 - RUNTIME
+%% =========================
 subgraph L3["Runtime Layer"]
     E["Ubuntu 24.04 (Noble)<br/>Linux userland"]
 end
 
-subgraph L4["Development Tools"]
+%% =========================
+%% LAYER 4 - DEV TOOLS
+%% =========================
+subgraph L4["Development Workflow"]
     F["SSH access"]
     G["VS Code Remote-SSH"]
     H["Swift build & run"]
 end
 
 %% =========================
-%% FLOW
+%% MAIN PIPELINE (VERTICAL)
 %% =========================
 
-A -->|container build| B
-B -->|build image| C
-C -->|container machine create| D
-D --> E
+A --> B --> C --> D --> E
+
+%% =========================
+%% DEVELOPMENT FLOW
+%% =========================
 
 D --> F --> G --> H
 
 %% =========================
-%% OPTIONAL HOST INTERACTION
+%% OPTIONAL HOST ACTIONS
 %% =========================
 
-A -->|git clone project| H
-A -->|curl http://swift-dev-machine:8080| D
+A -. "git clone project" .-> H
+A -. "curl http://swift-dev-machine:8080" .-> D
 ```
 
 ---
