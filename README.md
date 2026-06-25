@@ -25,7 +25,7 @@ Dockerfile → container image → container machine → SSH + VS Code remote de
 
 ## Diagram
 
-```Mermaid
+```mermaid
 flowchart LR
 
 %% =========================
